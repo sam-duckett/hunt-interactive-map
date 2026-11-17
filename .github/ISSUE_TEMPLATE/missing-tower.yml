@@ -1,0 +1,45 @@
+name: Missing or misplaced tower
+description: A tower is missing from the map, or isn't where it is in game.
+title: "[Tower] "
+labels: ["map data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make the map accurate! The easiest way to show us where a tower is:
+        stand on it in game, open the full map, and take a screenshot. Your player icon marks the spot.
+  - type: dropdown
+    id: map
+    attributes:
+      label: Which map?
+      options:
+        - Mammon's Gulch
+        - Stillwater Bayou
+        - Lawson Delta
+        - DeSalle
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: What's wrong?
+      options:
+        - A tower is missing from this map
+        - A tower is in the wrong place
+        - There's a tower on this map that doesn't exist in game
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where is it?
+      description: The nearest named location, e.g. "just north of Blanchett Graves".
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag in a screenshot of the in-game map while you're standing on the tower.
+    validations:
+      required: false

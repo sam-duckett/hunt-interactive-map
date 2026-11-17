@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hunt Interactive Map</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1 class="title"><small>Hunt</small>Interactive Map</h1>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Maps"></nav>
+</header>
+<main>
+  <div class="frame">
+    <div class="frame-title" id="mapname"></div>
+    <div class="mapwrap" id="wrap">
+      <img id="img" alt="Map">
+    </div>
+  </div>
+  <aside class="panel">
+    <h2>This Map</h2>
+    <ul class="tally" id="tally"></ul>
+    <p class="left"><span id="left">0</span> Points of Interest unchecked<span id="skipped"></span></p>
+    <h2 class="sub">Route</h2>
+    <p class="left" id="routeinfo"></p>
+    <label class="toggle"><span><kbd>L</kbd> Location names</span><input type="checkbox" id="names" checked><span class="sw"></span></label>
+    <p class="hint">Click a star to mark what was there (up to 3 things), or to skip it. For a route, set your position (or right-click the map) and add this match's extracts. Click an extract to remove it. Everything is saved in your browser until New match.</p>
+    <p class="ver" id="ver">Development copy</p>
+  </aside>
+</main>
+<div class="keybar">
+  <button id="setme" class="key"><kbd>P</kbd><span class="lbl">Set my position</span></button>
+  <button id="addexit" class="key"><kbd>X</kbd><span class="lbl">Add extracts</span></button>
+  <span class="spacer"></span>
+  <button id="reset" class="key red"><kbd>N</kbd><span class="lbl">New match (wipe all)</span></button>
+</div>
+<script src="map-data.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

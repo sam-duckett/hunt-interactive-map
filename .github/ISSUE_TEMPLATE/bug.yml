@@ -1,0 +1,42 @@
+name: Bug
+description: Something on the map doesn't work as it should.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: dropdown
+    id: how
+    attributes:
+      label: How were you using it?
+      options:
+        - The website
+        - The downloaded file
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      description: e.g. Chrome, Edge, Firefox
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The date shown at the bottom of the side panel, e.g. "Version 17 Nov 2026".
+    validations:
+      required: false
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: If it helps, drag in a screenshot.
+    validations:
+      required: false

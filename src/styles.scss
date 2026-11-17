@@ -1,0 +1,310 @@
+// Hunt Interactive Map: styled after Hunt: Showdown's menus.
+// Dark only. Garamond for headings and names, plain sans for body text,
+// cream for "selected", blood red for the destructive action, keycaps on everything with a shortcut.
+
+// ---- Palette ----
+:root {
+  --bg: #0b0a09;
+  --ink: #e9e5dc;          // main text
+  --mute: #9b968a;         // secondary text
+  --dim: #6e6a61;
+  --line: #4a4740;         // thin panel borders
+  --slab: #22201d;         // button/tab slabs
+  --cream: #ece3b5;        // selected / highlight (the favourite star colour)
+  --gold: #c9b878;         // small headings ("Last Mission")
+  --red: #a3201a;
+  --mat: #99958b;          // map frame card
+  --mat-ink: #3a3832;      // rules and title on the frame
+  color-scheme: dark;
+}
+
+// ---- Textures (inline SVG, so nothing extra to download) ----
+// Fine grain used on the background, slabs and the map frame
+$grain: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
+// Ragged bottom edge of the black header band (generated, tiles seamlessly)
+$torn-edge: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='18' viewBox='0 0 160 18'%3E%3Cpolygon fill='%23000' points='0,0 0,6 2,10.8 4,4.9 6,4.8 8,3.9 10,4.7 12,4.3 14,5.6 16,3.9 18,4.8 20,5.1 22,4 24,8.8 26,5.5 28,3.5 30,5.1 32,3.5 34,5.3 36,12.1 38,8.1 40,7.3 42,8.5 44,9.4 46,10.6 48,9.6 50,7.7 52,9.1 54,15.6 56,12.4 58,13 60,13 62,13 64,12.7 66,12.7 68,16.4 70,9.4 72,9.6 74,9.5 76,9 78,9.3 80,16.9 82,12.9 84,13 86,13 88,13 90,13 92,13 94,13 96,11.6 98,12.4 100,13 102,13 104,13 106,11.4 108,12.9 110,13 112,13 114,14.1 116,11.2 118,12.5 120,13 122,13 124,11.7 126,11.6 128,10.7 130,11.2 132,10.4 134,10.4 136,11 138,10.9 140,9.8 142,9.3 144,9.6 146,8.4 148,10.1 150,8.7 152,10 154,9 156,8 158,9.6 160,6 160,0'/%3E%3C/svg%3E";
+
+// ---- Fonts ----
+@font-face {
+  font-family: "EB Garamond"; font-weight: 500; font-style: normal; font-display: swap;
+  src: url("fonts/eb-garamond-500.woff2") format("woff2");
+}
+$serif: "EB Garamond", Garamond, "Palatino Linotype", Georgia, serif;
+$sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0; min-height: 100vh; color: var(--ink); font: 15px/1.45 $sans;
+  // grain, a dim red glow from below (like the lobby), and fog in the middle
+  background:
+    url($grain),
+    radial-gradient(ellipse 70% 45% at 50% 112%, #5c0f0b70, transparent 70%),
+    radial-gradient(ellipse 80% 70% at 45% 35%, #22201c 0, #121110 55%, var(--bg) 100%);
+  background-attachment: fixed;
+  padding-bottom: 70px;    // room for the key bar
+}
+
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+
+// Keycap, as in the game's prompts: [ESC] [Q] [CTRL]
+kbd {
+  display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 5px; flex: none;
+  border: 1.5px solid #d8d3c6; border-radius: 1px; background: #0007;
+  font: 600 11px/1 $sans; color: #f2eee5; text-transform: uppercase;
+}
+
+// ---- Header: black band with a torn bottom edge ----
+header {
+  position: relative; background: #000; padding: 14px 24px 6px;
+  display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+  &::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 18px;
+    background: url($torn-edge) repeat-x; background-size: 160px 18px; pointer-events: none;
+  }
+}
+.title {
+  margin: 0; font: 500 30px/1 $serif; color: #f4f0e6; letter-spacing: .01em; white-space: nowrap;
+  small { display: block; font-size: 16px; color: var(--gold); margin-bottom: 2px; }
+}
+
+// Map tabs, like the top menu: [Q] PLAY  HUNTERS  LOADOUTS [E]
+.tabs {
+  display: flex; align-items: center; gap: 4px 22px; flex-wrap: wrap; flex: 1; justify-content: center;
+  button {
+    background: none; border: 0; padding: 8px 2px 7px; cursor: pointer;
+    font: 500 19px/1 $serif; letter-spacing: .04em; text-transform: uppercase; color: #8d887d;
+    border-bottom: 2px solid transparent;
+    &:hover { color: #d6d1c5; }
+    &[aria-selected="true"] { color: #fff; border-bottom-color: #e8e4da; }
+  }
+  kbd { cursor: pointer; }
+  @media (max-width: 700px) {
+    flex-basis: 100%; gap: 4px 14px;
+    button { font-size: 15px; }
+  }
+}
+@media (max-width: 700px) { header { padding: 12px 16px 6px; gap: 8px; } .title { font-size: 26px; } }
+
+// ---- Layout ----
+main {
+  display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px;
+  max-width: 1240px; margin: 0 auto; padding: 40px 24px 24px; align-items: start;
+  @media (max-width: 900px) { grid-template-columns: minmax(0, 1fr); padding: 32px 16px 16px; }
+}
+
+// ---- Map frame: the grey card with ruled lines and the map name, as on the in-game map ----
+.frame {
+  position: relative; width: 100%; max-width: 820px; margin: 0 auto; container-type: inline-size;
+  // padding in % (of the frame's width): cqw here would measure the window, not the frame
+  padding: 6.2% 2.9% 2.9%;
+  // worn card: lighter in the middle, darker towards the edges, plus grain
+  background:
+    url($grain),
+    radial-gradient(ellipse 75% 75% at 50% 50%, #ffffff14, transparent 70%),
+    radial-gradient(ellipse 110% 110% at 50% 50%, transparent 55%, #0000004d 100%),
+    var(--mat);
+  border-radius: 3px;
+  box-shadow: 0 18px 50px #000c, 0 2px 0 #fff2 inset, 0 0 40px #0005 inset;
+  // thin outer rule
+  &::before {
+    content: ""; position: absolute; inset: 4.4cqw 1.4cqw 1.4cqw; pointer-events: none;
+    border: max(1px, .16cqw) solid var(--mat-ink); opacity: .75;
+  }
+}
+.frame-title {
+  position: absolute; left: 0; right: 0; top: 2.3cqw; transform: translateY(-50%);
+  display: flex; align-items: center; justify-content: center; gap: 2.2cqw;
+  font: 500 max(11px, 2.5cqw)/1 $serif; letter-spacing: .62em; text-transform: uppercase; color: var(--mat-ink);
+  padding-left: .62em;   // balance the trailing letter-spacing
+  white-space: nowrap; pointer-events: none;
+  &::before, &::after { content: ""; width: 5cqw; height: max(1px, .16cqw); background: currentColor; opacity: .8; }
+}
+
+.mapwrap {
+  position: relative; width: 100%; aspect-ratio: 1 / 1; container-type: size;
+  background: #222; overflow: hidden;
+  // thick inner rule hugging the map
+  outline: max(2px, .4cqw) solid var(--mat-ink); outline-offset: max(2px, .5cqw);
+  box-shadow: 0 0 0 1px #0006;
+  > img { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
+  &.placing { cursor: crosshair; .mk, .pop { pointer-events: none; } }
+}
+
+// ---- Icons: PNG files include their own dark circle; the coloured glyph is the fallback ----
+.ico {
+  --s: 28px;
+  display: inline-grid; place-items: center; flex: none;
+  width: var(--s); height: var(--s); border-radius: 50%;
+  background: var(--c); color: #fff; font: 700 11px/1 $sans;
+  img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  &.img { background: none; }
+}
+
+// ---- Towers ----
+// Unchecked tower: the cream outline star from the loadout "favourite" button
+$star: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon points='12,2.1 14.76,8.8 21.99,9.36 16.47,14.05 18.17,21.09 12,17.3 5.83,21.09 7.53,14.05 2.01,9.36 9.24,8.8' fill='%23141414' fill-opacity='.6' stroke='%23ece3b5' stroke-width='2'/%3E%3C/svg%3E";
+
+.mk {
+  --s: max(24px, 4.6cqw);
+  position: absolute; width: var(--s); height: var(--s);
+  transform: translate(-50%, -50%); padding: 0; cursor: pointer;
+  background: url($star) center / contain no-repeat; border: 0;
+  filter: drop-shadow(0 1px 2px #000c);
+  transition: transform .1s;
+  &:hover, &:focus-visible { transform: translate(-50%, -50%) scale(1.2); outline: 0; }
+  &.done {
+    display: flex; width: auto; background: none; filter: none;
+    &:hover, &:focus-visible { transform: translate(-50%, -50%); }
+    .ico { --s: max(28px, 5.4cqw); box-shadow: 0 0 0 2px #000a; }
+    .ico + .ico { margin-left: calc(var(--s) * -.3); } // overlap when a tower has several marks
+  }
+  &.skipped { opacity: .4; filter: grayscale(1) drop-shadow(0 1px 2px #000c); }
+
+  // Route stop number in a diamond, like the hunter level diamond
+  .ord {
+    position: absolute; top: -10px; right: -13px; width: 22px; height: 22px; isolation: isolate;
+    display: grid; place-items: center; pointer-events: none;
+    font: 700 10.5px/1 $sans; color: var(--cream);
+    &::before {
+      content: ""; position: absolute; inset: 4px; z-index: -1; transform: rotate(45deg);
+      background: #141311; border: 1.5px solid var(--cream); box-shadow: 0 0 0 1px #000a;
+    }
+  }
+}
+
+// Location names, styled after the in-game map: upright Garamond, light grey, soft shadow
+.loc {
+  position: absolute; transform: translate(-50%, -50%); width: 15cqw; text-align: center; pointer-events: none;
+  font: 500 max(11px, 1.85cqw)/1.1 $serif; color: #e6e1d6;
+  letter-spacing: .01em; text-shadow: 1px 2px 2px #000d, 0 0 4px #0009;
+}
+
+// ---- Route ----
+.route {
+  position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+  .leg { fill: none; stroke: var(--cream); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; opacity: .95;
+         filter: drop-shadow(0 0 2px #000) drop-shadow(0 1px 1px #000); }
+  .out { stroke-dasharray: 6 6; }
+}
+
+// "You": the game's yellow player disc
+.me {
+  --s: max(16px, 2.6cqw);
+  position: absolute; z-index: 2; width: var(--s); height: var(--s); transform: translate(-50%, -50%);
+  border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, #f4e9b0 0 34%, #3b3522 36% 50%, #f4e9b0 52%);
+  box-shadow: 0 0 0 2px #000b, 0 0 14px #f4e9b0aa;
+}
+
+// Extract: the game's "extraction point" glyph, an arrow into a bracket
+$exit: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke-linecap='square'%3E%3Cg stroke='%23000' stroke-opacity='.75' stroke-width='5'%3E%3Cpath d='M14 4h5v16h-5M3 12h10M9 7.5l4.5 4.5L9 16.5'/%3E%3C/g%3E%3Cg stroke='%23f2efe6' stroke-width='2.2'%3E%3Cpath d='M14 4h5v16h-5M3 12h10M9 7.5l4.5 4.5L9 16.5'/%3E%3C/g%3E%3C/svg%3E";
+$exit-hover: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke-linecap='square'%3E%3Cg stroke='%23000' stroke-opacity='.75' stroke-width='5'%3E%3Cpath d='M14 4h5v16h-5M3 12h10M9 7.5l4.5 4.5L9 16.5'/%3E%3C/g%3E%3Cg stroke='%23e0463b' stroke-width='2.2'%3E%3Cpath d='M14 4h5v16h-5M3 12h10M9 7.5l4.5 4.5L9 16.5'/%3E%3C/g%3E%3C/svg%3E";
+.exit {
+  --s: max(22px, 4cqw);
+  position: absolute; z-index: 2; width: var(--s); height: var(--s); transform: translate(-50%, -50%);
+  padding: 0; border: 0; cursor: pointer; background: url($exit) center / contain no-repeat;
+  &:hover { background-image: url($exit-hover); }    // click removes it
+}
+
+// ---- Panels: dark, see-through, thin grey border (like "Hunter Progress") ----
+.panel {
+  background: url($grain), #0e0d0cd9; border: 1px solid var(--line);
+  box-shadow: 0 0 0 1px #000 inset, 0 12px 40px #0009;
+}
+
+aside.panel {
+  padding: 20px 22px 18px;
+  h2 { margin: 0 0 10px; font: 500 20px/1.1 $serif; color: var(--gold); }
+  h2 + * { margin-top: 0; }
+  .sub { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .tally {
+    list-style: none; margin: 0; padding: 0;
+    li {
+      display: flex; align-items: center; gap: 12px; padding: 5px 0;
+      .ico { --s: 34px; }
+      .lbl { flex: 1; }
+      b { font: 500 21px/1 $serif; color: #fff; min-width: 1.2em; text-align: right; }
+    }
+  }
+  .left { margin: 10px 0 0; color: var(--mute); font-size: 13.5px; }
+  .hint { color: var(--dim); font-size: 12.5px; margin: 18px 0 0; }
+  .ver { color: var(--dim); font-size: 11px; margin: 8px 0 0; opacity: .8; }
+}
+
+// Settings-style On/Off toggle for location names
+.toggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; cursor: pointer;
+  input { position: absolute; opacity: 0; pointer-events: none; }
+  .sw {
+    display: flex; align-items: center; justify-content: space-between; width: 92px; height: 30px; padding: 0 8px;
+    background: #000; border: 1px solid #2c2a26; font-size: 14px; color: var(--mute);
+    &::before { content: ""; width: 16px; height: 16px; background: #6d6a63; order: 0; }
+    &::after { content: "Off"; order: 1; }
+  }
+  input:checked + .sw {
+    background: url($grain), #c9c09a; color: #111; flex-direction: row-reverse;
+    &::before { background: #000; }
+    &::after { content: "On"; }
+  }
+  input:focus-visible + .sw { outline: 2px solid var(--cream); outline-offset: 2px; }
+}
+
+// ---- Slab buttons with keycaps, like the bottom bar: [F] FIND TEAMMATES ----
+.key {
+  display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 10px; cursor: pointer;
+  background: url($grain), linear-gradient(180deg, #2c2a26, #1d1b19); border: 1px solid #3c3934;
+  font: 600 13px/1.1 $sans; text-transform: uppercase; letter-spacing: .02em; color: #ece8df; text-align: left;
+  &:hover { border-color: #8a857a; }
+  &.on {           // active mode: the cream "selected" slab
+    background: url($grain), linear-gradient(180deg, #d4ca9f, #b9ae82); color: #15130f; border-color: #f3ecd0;
+    kbd { border-color: #15130f; color: #15130f; background: #fff3; }
+  }
+  &.red {          // like CTRL BACK TO LOBBY
+    background: url($grain), linear-gradient(90deg, #b3241b, #7c140f 70%, #5c0f0b); border-color: #c33a2f;
+    &:hover { border-color: #ff8a7f; }
+  }
+}
+
+// Bottom key bar, fixed like the in-game one
+.keybar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; padding: 10px 24px;
+  background: linear-gradient(0deg, #000 40%, #000c 80%, transparent);
+  .spacer { flex: 1; }
+  @media (max-width: 700px) {
+    position: static; background: none; padding: 0 16px 16px;
+    .spacer { display: none; }
+    .key { flex: 1 1 auto; }
+  }
+}
+@media (max-width: 700px) { body { padding-bottom: 0; } }
+
+// ---- Picker: dark panel with an icon list; selected = rough white outline like the selected row ----
+.pop {
+  position: absolute; z-index: 5; width: 300px; padding: 14px;
+  background: url($grain), #0e0d0cf7;   // nearly solid, so map labels don't show through
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  transform: translate(14px, 14px);
+  &.fx { transform: translate(calc(-100% - 14px), 14px); }
+  &.fy { transform: translate(14px, calc(-100% - 14px)); }
+  &.fx.fy { transform: translate(calc(-100% - 14px), calc(-100% - 14px)); }
+  .pophead { grid-column: 1 / -1; margin: 0 0 4px; font: 500 18px/1 $serif; color: var(--gold); }
+  .opt {
+    display: flex; align-items: center; gap: 8px; padding: 5px 6px; text-align: left;
+    background: #ffffff0a; border: 1px solid #ffffff12; cursor: pointer; font: 13px/1.2 $sans; color: var(--ink);
+    .ico { --s: 38px; }
+    &:hover:not(:disabled) { background: #ffffff16; border-color: #8a857a; }
+    &.sel { border: 2px solid #f1eee6; padding: 4px 5px; background: #ffffff1c; box-shadow: 0 0 6px #fff3; }
+    &:disabled { opacity: .35; cursor: not-allowed; }
+  }
+  .pophint { grid-column: 1 / -1; margin: 4px 0 0; color: var(--dim); font-size: 12px; text-align: center; }
+  .unmark {
+    grid-column: 1 / -1; padding: 7px; cursor: pointer;
+    background: url($grain), #1d1b19; border: 1px solid #3c3934; color: #d9d4c8;
+    font: 600 12px/1.2 $sans; text-transform: uppercase; letter-spacing: .02em;
+    &:hover { border-color: #8a857a; }
+    &[hidden] { display: none; }
+  }
+}

@@ -1,0 +1,37 @@
+# Publishes the map as a website on GitHub Pages: https://sam-duckett.github.io/hunt-interactive-map/
+# It uses the committed build (dist/hunt-interactive-map.html), so remember `npm run build` before committing.
+# One-off setup: repo Settings > Pages > Source: "GitHub Actions" (only available once the repo is public on a free plan).
+name: Publish website
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # lets you re-run it by hand from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare site
+        run: |
+          mkdir _site
+          cp dist/hunt-interactive-map.html _site/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

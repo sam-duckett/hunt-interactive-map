@@ -1,0 +1,9 @@
+{
+  "name": "hunt-interactive-map",
+  "private": true,
+  "scripts": {
+    "css": "sass src/styles.scss src/styles.css --watch",
+    "build": "sass src/styles.scss src/styles.css --no-source-map && node build.js"
+  },
+  "devDependencies": { "sass": "^1.80.0" }
+}
